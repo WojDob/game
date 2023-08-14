@@ -12,19 +12,21 @@ int mapSetUp();
 
 Player * playerSetUp();
 
+int handleInput(int input, Player * player);
+int playerMove(int y, int x, Player * player);
+
 int main()
 {
-	Player * user;
+	Player * player;
 	int ch;
 	screenSetUp();
    	mapSetUp(); 
 
-	user = playerSetUp();
+	player = playerSetUp();
 
 	while((ch =getch()) != 'q')
 	{
-	
-    	getch();
+		handleInput(ch, player);	
 	}
 
     	endwin();
@@ -38,7 +40,7 @@ int screenSetUp()
     	noecho();
     	refresh();
 
-    	return 0;
+    	return 1;
 }
 
 int mapSetUp()
@@ -72,6 +74,33 @@ Player * playerSetUp()
 }
 
 
+int handleInput(int input, Player * player)
+{
+	switch(input)
+	{
+		case 'w':
+			playerMove(player->yPosition-1,player->xPosition,player);
+			break;
+		case 's':
+			playerMove(player->yPosition+1,player->xPosition,player);
+			break;
+		case 'a':
+			playerMove(player->yPosition,player->xPosition-1,player);
+			break;
+		case 'd':
+			playerMove(player->yPosition,player->xPosition+1,player);
+			break;
+		default:
+			break;
+	}
+}
 
-
+int playerMove(int y, int x, Player * player)
+{
+	mvprintw(player->yPosition,player->xPosition, ".");  
+	player->yPosition = y;
+	player->xPosition = x;
+	mvprintw(player->yPosition,player->xPosition, "@");  
+	move(player->yPosition,player->xPosition);  
+}
 
