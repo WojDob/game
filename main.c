@@ -1,7 +1,40 @@
+//                       _oo0oo_
+//                      o8888888o
+//                      88" . "88
+//                      (| -_- |)
+//                      0\  =  /0
+//                    ___/`---'\___
+//                  .' \\|     |// '.
+//                 / \\|||  :  |||// \
+//                / _||||| -:- |||||- \
+//               |   | \\\  -  /// |   |
+//               | \_|  ''\---/''  |_/ |
+//               \  .-\__  '-'  ___/-. /
+//             ___'. .'  /--.--\  `. .'___
+//          ."" '<  `.___\_<|>_/___.' >' "".
+//         | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+//         \  \ `_.   \_ __\ /__ _/   .-` /  /
+//     =====`-.____`.___ \_____/___.-`___.-'=====
+//                       `=---='
+//
+//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//               佛祖保佑         永無BUG
+//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #include <ncurses.h>
 #include <stdlib.h>
 
-typedef struct
+typedef struct Room
+{
+	int xPosition;
+	int yPosition;
+	int height;
+	int width;
+//	Monster ** monsters;
+//	Item ** items;
+} Room;
+
+typedef struct Player
 {
 	int xPosition;
 	int yPosition;
@@ -9,7 +42,7 @@ typedef struct
 } Player;
 
 int screenSetUp();
-int mapSetUp();
+Room ** mapSetUp();
 
 Player *playerSetUp();
 
@@ -17,6 +50,8 @@ int handleInput(int input, Player *player);
 int checkPosition(int newY, int newX, Player *player);
 
 int playerMove(int y, int x, Player *player);
+Room * createRoom(int y, int x, int height, int width);
+int drawRoom(Room *room);
 
 int main()
 {
@@ -46,23 +81,57 @@ int screenSetUp()
 	return 1;
 }
 
-int mapSetUp()
+Room ** mapSetUp()
 {
-	mvprintw(13, 13, "--------");
-	mvprintw(14, 13, "|......|");
-	mvprintw(15, 13, "|......|");
-	mvprintw(16, 13, "|......|");
-	mvprintw(17, 13, "|......|");
-	mvprintw(18, 13, "--------");
-
-	mvprintw(2, 40, "--------");
-	mvprintw(3, 40, "|......|");
-	mvprintw(4, 40, "|......|");
-	mvprintw(5, 40, "|......|");
-	mvprintw(6, 40, "|......|");
-	mvprintw(7, 40, "--------");
+	Room ** rooms;
+	rooms = malloc(sizeof(Room) *6);
+	
+	rooms[0] = createRoom(13,13,6,8);
+	drawRoom(rooms[0]);
+	
+	rooms[1] = createRoom(40,2,6,8);
+	drawRoom(rooms[1]);
+	
+	rooms[2] = createRoom(40,10,6,12);
+	drawRoom(rooms[2]);
+	return rooms;
 }
 
+Room * createRoom(int x, int y, int height, int width)
+{
+	Room * newRoom;
+	newRoom = malloc(sizeof(Room));
+	newRoom->xPosition = x;
+	newRoom->yPosition = y;
+	newRoom->height = height;
+	newRoom->width =width;
+
+	return newRoom;
+}
+int drawRoom(Room *room)
+{
+	int x;
+	int y;
+	// draw top and bottom
+	for(x = room->xPosition; x < room->xPosition + room->width; x++)
+	{
+		mvprintw(room->yPosition, x, "-");
+		mvprintw(room->yPosition + room->height - 1, x, "-"); 
+	}
+
+
+	// draw floors
+	for (y = room->yPosition + 1; y < room->yPosition + room->height -1; y++)
+	{
+		mvprintw(y, room->xPosition, "|"); 
+		mvprintw(y, room->xPosition + room->width - 1, "|"); 
+		for (x = room->xPosition + 1; x < room->xPosition + room->width - 1; x++)
+		{
+			mvprintw(y,x,".");
+		}
+
+	}
+}
 Player *playerSetUp()
 {
 	Player *newPlayer;
